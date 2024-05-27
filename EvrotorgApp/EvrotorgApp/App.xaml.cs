@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -14,6 +15,10 @@ namespace EvrotorgApp
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddSingleton<MainWindow>();
+                    services.AddHttpClient<CurrencyHttpClient>(c =>
+                    {
+                        c.BaseAddress = new Uri("https://api.nbrb.by/exrates/");
+                    });
                 })
                 .Build();
         }

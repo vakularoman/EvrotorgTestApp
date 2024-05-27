@@ -1,0 +1,114 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewModels="clr-namespace:EvrotorgApp.ViewModels"
+                    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+                    xmlns:behaviors="clr-namespace:EvrotorgApp.Behaviors">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Views/WindowResources.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+
+    <DataTemplate DataType="{x:Type viewModels:MainViewModel}" x:Key="EmptyContent">
+        <TextBlock HorizontalAlignment="Center"
+                   VerticalAlignment="Center" Text="Load data from server or from file." />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:MainViewModel}" x:Key="ContentWithData">
+        <ListView ItemsSource="{Binding RateRates}">
+            <ListView.Style>
+                <Style>
+                    <Style.Resources>
+                        <Style TargetType="TextBox" >
+                            <Setter Property="Height" Value="30" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="BorderThickness" Value="0" />
+                        </Style>
+                    </Style.Resources>
+                </Style>
+            </ListView.Style>
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Date">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:RateViewModel}">
+                                <TextBlock Text="{Binding Date, StringFormat={}{0:MM/dd/yyyy}}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Abbreviation">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:RateViewModel}">
+                                <TextBox Text="{Binding Cur_Abbreviation}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Name">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:RateViewModel}">
+                                <TextBlock Text="{Binding Cur_Name}" />
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Official Rate">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:RateViewModel}">
+                                <TextBox Text="{Binding Cur_OfficialRate, Converter={StaticResource NullableNumericConverter}}">
+                                    <b:Interaction.Behaviors>
+                                        <behaviors:NumericTextBoxBehavior />
+                                    </b:Interaction.Behaviors>
+                                </TextBox>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewModels:MainViewModel}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <WrapPanel Grid.Row="0"
+                       HorizontalAlignment="Center"
+                       Margin="0,0,0,10">
+                <DatePicker SelectedDate="{Binding SelectedDate}"
+                            VerticalContentAlignment="Center"
+                            Margin="0,0,10,0" />
+                <Button Content="Search"
+                        Style="{StaticResource ButtonRoundedCorner}"
+                        Margin="0,0,10,0"
+                        Command="{Binding SearchCommand, Mode=OneWay}" />
+                <Button Content="Save"
+                        Style="{StaticResource ButtonRoundedCorner}"
+                        Margin="0,0,10,0"
+                        IsEnabled="{Binding IsListFill}"
+                        Command="{Binding SaveToFileCommand, Mode=OneWay}" />
+                <Button Content="Save Changes"
+                        IsEnabled="{Binding IsLoadedFile}"
+                        Style="{StaticResource ButtonRoundedCorner}"
+                        Margin="0,0,10,0"
+                        Command="{Binding SaveChangesCommand, Mode=OneWay}" />
+                <Button Content="Load"
+                        Style="{StaticResource ButtonRoundedCorner}"
+                        Margin="0,0,10,0"
+                        Command="{Binding ReadFromFileCommand, Mode=OneWay}" />
+            </WrapPanel>
+
+            <ContentControl Grid.Row="1" Content="{Binding}">
+                <ContentControl.Style>
+                    <Style TargetType="{x:Type ContentControl}">
+                        <Setter Property="ContentTemplate" Value="{StaticResource EmptyContent}" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsListFill}" Value="True">
+                                <Setter Property="ContentTemplate" Value="{StaticResource ContentWithData}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
+        </Grid>
+    </DataTemplate>
+    
+</ResourceDictionary>
